@@ -94,12 +94,12 @@ export default function TradePage() {
   const total = Number(amount) * (orderType === "market" ? marketData.currentPrice : Number(price))
 
   return (
-    <main className="min-h-screen bg-gray-950">
+    <main className="min-h-screen pt-16">
       <AnimatedBackground />
       <WalletModal isOpen={isWalletOpen} onClose={() => setIsWalletOpen(false)} />
 
       {/* Header */}
-      <header className="border-b border-gray-800 bg-gray-900/80 backdrop-blur-xl">
+      <header className="bg-gray-900/80 backdrop-blur-xl border-b border-gray-800/50">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -191,15 +191,19 @@ export default function TradePage() {
           {/* Sol Panel - Grafik */}
           <div className="col-span-8 space-y-6">
             {/* Grafik */}
-            <div className="bg-gray-900/80 backdrop-blur-xl rounded-2xl border border-gray-800/50 p-4 h-[600px]">
+            <div className="bg-gray-900/80 backdrop-blur-xl rounded-2xl border border-gray-800/50 p-4 h-[600px] shadow-lg hover:shadow-xl transition-shadow duration-300">
               <TradingViewWidget />
             </div>
 
             {/* Açık Emirler */}
-            <div className="bg-gray-900/80 backdrop-blur-xl rounded-2xl border border-gray-800/50 p-4">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold text-gray-100">Açık Emirler</h2>
-                <button className="text-sm text-blue-400 hover:text-blue-300">
+            <div className="bg-gray-900/80 backdrop-blur-xl rounded-2xl border border-gray-800/50 p-4 shadow-lg hover:shadow-xl transition-shadow duration-300">
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-lg font-semibold text-gray-100 flex items-center gap-2">
+                  <History className="w-5 h-5 text-blue-400" />
+                  Açık Emirler
+                </h2>
+                <button className="text-sm text-blue-400 hover:text-blue-300 transition-colors duration-200 flex items-center gap-1">
+                  <Settings className="w-4 h-4" />
                   Tümünü İptal Et
                 </button>
               </div>
@@ -248,47 +252,51 @@ export default function TradePage() {
           {/* Sağ Panel - Alım/Satım ve Emir Defteri */}
           <div className="col-span-4 space-y-6">
             {/* Alım/Satım Formu */}
-            <div className="bg-gray-900/80 backdrop-blur-xl rounded-2xl border border-gray-800/50 p-4">
-              <div className="flex gap-2 mb-6">
+            <div className="bg-gray-900/80 backdrop-blur-xl rounded-2xl border border-gray-800/50 p-6 shadow-lg hover:shadow-xl transition-all duration-300">
+              {/* Alış/Satış Seçimi */}
+              <div className="flex gap-2 mb-6 p-1 bg-gray-800/50 backdrop-blur-sm rounded-xl">
                 <button
                   onClick={() => setTradeType("buy")}
-                  className={`flex-1 py-2 rounded-lg font-medium ${
+                  className={`flex-1 py-3 rounded-lg font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
                     tradeType === "buy"
-                      ? "bg-green-500 text-white"
-                      : "bg-gray-800 text-gray-300 hover:bg-gray-700"
+                      ? "bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-lg"
+                      : "hover:bg-gray-700/50 text-gray-300"
                   }`}
                 >
+                  <ArrowDown className="w-4 h-4" />
                   Alış
                 </button>
                 <button
                   onClick={() => setTradeType("sell")}
-                  className={`flex-1 py-2 rounded-lg font-medium ${
+                  className={`flex-1 py-3 rounded-lg font-medium transition-all duration-200 flex items-center justify-center gap-2 ${
                     tradeType === "sell"
-                      ? "bg-red-500 text-white"
-                      : "bg-gray-800 text-gray-300 hover:bg-gray-700"
+                      ? "bg-gradient-to-r from-red-500 to-pink-500 text-white shadow-lg"
+                      : "hover:bg-gray-700/50 text-gray-300"
                   }`}
                 >
+                  <ArrowUp className="w-4 h-4" />
                   Satış
                 </button>
               </div>
 
-              <div className="flex gap-2 mb-6">
+              {/* Limit/Piyasa Seçimi */}
+              <div className="flex gap-2 mb-6 p-1 bg-gray-800/50 backdrop-blur-sm rounded-xl">
                 <button
                   onClick={() => setOrderType("limit")}
-                  className={`flex-1 py-2 rounded-lg text-sm font-medium ${
+                  className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
                     orderType === "limit"
-                      ? "bg-blue-500 text-white"
-                      : "bg-gray-800 text-gray-300 hover:bg-gray-700"
+                      ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg"
+                      : "hover:bg-gray-700/50 text-gray-300"
                   }`}
                 >
                   Limit
                 </button>
                 <button
                   onClick={() => setOrderType("market")}
-                  className={`flex-1 py-2 rounded-lg text-sm font-medium ${
+                  className={`flex-1 py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
                     orderType === "market"
-                      ? "bg-blue-500 text-white"
-                      : "bg-gray-800 text-gray-300 hover:bg-gray-700"
+                      ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg"
+                      : "hover:bg-gray-700/50 text-gray-300"
                   }`}
                 >
                   Piyasa
@@ -298,7 +306,7 @@ export default function TradePage() {
               <div className="space-y-4">
                 {orderType === "limit" && (
                   <div>
-                    <label className="block text-sm text-gray-400 mb-2">
+                    <label className="block text-sm text-gray-400 mb-2 font-medium">
                       Fiyat
                     </label>
                     <div className="relative">
@@ -306,10 +314,10 @@ export default function TradePage() {
                         type="text"
                         value={price}
                         onChange={(e) => setPrice(e.target.value)}
-                        className="w-full px-4 py-2 rounded-lg border border-gray-700 bg-gray-800 text-gray-100 focus:outline-none focus:border-blue-500"
+                        className="w-full px-4 py-3 rounded-xl border border-gray-700/50 bg-gray-800/50 text-gray-100 focus:outline-none focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/20 transition-all duration-200 placeholder-gray-500"
                         placeholder="0.00"
                       />
-                      <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400">
+                      <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 font-medium">
                         TRY
                       </span>
                     </div>
@@ -317,7 +325,7 @@ export default function TradePage() {
                 )}
 
                 <div>
-                  <label className="block text-sm text-gray-400 mb-2">
+                  <label className="block text-sm text-gray-400 mb-2 font-medium">
                     Miktar
                   </label>
                   <div className="relative">
@@ -325,10 +333,10 @@ export default function TradePage() {
                       type="text"
                       value={amount}
                       onChange={(e) => setAmount(e.target.value)}
-                      className="w-full px-4 py-2 rounded-lg border border-gray-700 bg-gray-800 text-gray-100 focus:outline-none focus:border-blue-500"
+                      className="w-full px-4 py-3 rounded-xl border border-gray-700/50 bg-gray-800/50 text-gray-100 focus:outline-none focus:border-blue-500/50 focus:ring-2 focus:ring-blue-500/20 transition-all duration-200 placeholder-gray-500"
                       placeholder="0.00"
                     />
-                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400">
+                    <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 font-medium">
                       İP
                     </span>
                   </div>
@@ -338,7 +346,7 @@ export default function TradePage() {
                   {[25, 50, 75, 100].map((percent) => (
                     <button
                       key={percent}
-                      className="py-1 text-sm bg-gray-800 text-gray-300 rounded hover:bg-gray-700"
+                      className="py-2 text-sm bg-gray-800/50 text-gray-300 rounded-lg hover:bg-gray-700/50 transition-all duration-200 font-medium border border-gray-700/50 hover:border-gray-600/50"
                     >
                       {percent}%
                     </button>
@@ -347,16 +355,16 @@ export default function TradePage() {
 
                 {/* Toplam ve Komisyon Bilgisi */}
                 {(amount || price) && (
-                  <div className="mt-4 p-4 bg-gray-800 rounded-lg space-y-2">
+                  <div className="mt-4 p-4 bg-gray-800/30 rounded-xl space-y-2 border border-gray-700/50">
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-400">Toplam</span>
-                      <span className="text-gray-200">₺{total.toLocaleString()}</span>
+                      <span className="text-gray-200 font-medium">₺{total.toLocaleString()}</span>
                     </div>
                     <div className="flex justify-between text-sm">
                       <span className="text-gray-400">Komisyon (%0.1)</span>
-                      <span className="text-gray-200">₺{(total * 0.001).toLocaleString()}</span>
+                      <span className="text-gray-200 font-medium">₺{(total * 0.001).toLocaleString()}</span>
                     </div>
-                    <div className="flex justify-between text-sm font-medium pt-2 border-t border-gray-700">
+                    <div className="flex justify-between text-sm font-medium pt-2 border-t border-gray-700/50">
                       <span className="text-gray-300">Ödenecek Tutar</span>
                       <span className="text-gray-100">₺{(total * 1.001).toLocaleString()}</span>
                     </div>
@@ -367,69 +375,90 @@ export default function TradePage() {
                   <motion.button
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    className={`w-full py-3 rounded-lg font-medium text-white ${
+                    className={`w-full py-4 rounded-xl font-medium text-white transition-all duration-200 flex items-center justify-center gap-2 ${
                       tradeType === "buy"
-                        ? "bg-green-500 hover:bg-green-600"
-                        : "bg-red-500 hover:bg-red-600"
+                        ? "bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 shadow-lg shadow-green-500/20"
+                        : "bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 shadow-lg shadow-red-500/20"
                     }`}
                   >
-                    {tradeType === "buy" ? "Satın Al" : "Sat"}
+                    {tradeType === "buy" ? (
+                      <>
+                        <ArrowDown className="w-5 h-5" />
+                        Satın Al
+                      </>
+                    ) : (
+                      <>
+                        <ArrowUp className="w-5 h-5" />
+                        Sat
+                      </>
+                    )}
                   </motion.button>
                 </div>
               </div>
             </div>
 
             {/* Emir Defteri */}
-            <div className="bg-gray-900/80 backdrop-blur-xl rounded-2xl border border-gray-800/50 p-4">
-              <h2 className="text-lg font-semibold text-gray-100 mb-4">Emir Defteri</h2>
+            <div className="bg-gray-900/80 backdrop-blur-xl rounded-2xl border border-gray-800/50 p-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
+              <h2 className="text-lg font-semibold text-gray-100 mb-4 flex items-center gap-2">
+                <ChartBar className="w-5 h-5 text-blue-400" />
+                Emir Defteri
+              </h2>
               
               {/* Satış Emirleri */}
-              <div className="space-y-1 mb-4">
+              <div className="space-y-1.5 mb-4">
                 {orderBook.asks.map((order, index) => (
                   <div
                     key={index}
-                    className="grid grid-cols-3 text-sm"
+                    className="grid grid-cols-3 text-sm items-center bg-red-500/5 p-2 rounded-lg hover:bg-red-500/10 transition-colors duration-200"
                   >
-                    <span className="text-red-400">{order.price}</span>
-                    <span className="text-right text-gray-300">{order.amount}</span>
-                    <span className="text-right text-gray-400">{order.total}</span>
+                    <span className="text-red-400 font-medium">₺{order.price}</span>
+                    <span className="text-right text-gray-300">{order.amount.toLocaleString()}</span>
+                    <span className="text-right text-gray-400">₺{order.total.toLocaleString()}</span>
                   </div>
                 ))}
               </div>
 
               {/* Güncel Fiyat */}
-              <div className="text-center py-2 border-y border-gray-800">
-                <span className="text-lg font-bold text-gray-100">₺{marketData.currentPrice}</span>
+              <div className="text-center py-3 border-y border-gray-800 my-4 bg-blue-500/5 rounded-lg">
+                <div className="flex items-center justify-center gap-2">
+                  <span className="text-lg font-bold text-gray-100">₺{marketData.currentPrice}</span>
+                  <span className={`text-sm ${marketData.priceChange >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                    ({marketData.priceChangePercent}%)
+                  </span>
+                </div>
               </div>
 
               {/* Alış Emirleri */}
-              <div className="space-y-1 mt-4">
+              <div className="space-y-1.5 mt-4">
                 {orderBook.bids.map((order, index) => (
                   <div
                     key={index}
-                    className="grid grid-cols-3 text-sm"
+                    className="grid grid-cols-3 text-sm items-center bg-green-500/5 p-2 rounded-lg hover:bg-green-500/10 transition-colors duration-200"
                   >
-                    <span className="text-green-400">{order.price}</span>
-                    <span className="text-right text-gray-300">{order.amount}</span>
-                    <span className="text-right text-gray-400">{order.total}</span>
+                    <span className="text-green-400 font-medium">₺{order.price}</span>
+                    <span className="text-right text-gray-300">{order.amount.toLocaleString()}</span>
+                    <span className="text-right text-gray-400">₺{order.total.toLocaleString()}</span>
                   </div>
                 ))}
               </div>
             </div>
 
             {/* Son İşlemler */}
-            <div className="bg-gray-900/80 backdrop-blur-xl rounded-2xl border border-gray-800/50 p-4">
-              <h2 className="text-lg font-semibold text-gray-100 mb-4">Son İşlemler</h2>
+            <div className="bg-gray-900/80 backdrop-blur-xl rounded-2xl border border-gray-800/50 p-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
+              <h2 className="text-lg font-semibold text-gray-100 mb-4 flex items-center gap-2">
+                <History className="w-5 h-5 text-blue-400" />
+                Son İşlemler
+              </h2>
               <div className="space-y-2">
                 {recentTrades.map((trade, index) => (
                   <div
                     key={index}
-                    className="grid grid-cols-3 text-sm"
+                    className="grid grid-cols-3 text-sm items-center bg-gray-800/50 p-2 rounded-lg hover:bg-gray-800 transition-colors duration-200"
                   >
-                    <span className={trade.type === 'buy' ? 'text-green-400' : 'text-red-400'}>
-                      {trade.price}
+                    <span className={`font-medium ${trade.type === 'buy' ? 'text-green-400' : 'text-red-400'}`}>
+                      ₺{trade.price}
                     </span>
-                    <span className="text-right text-gray-300">{trade.amount}</span>
+                    <span className="text-right text-gray-300">{trade.amount.toLocaleString()}</span>
                     <span className="text-right text-gray-400">{trade.time}</span>
                   </div>
                 ))}
