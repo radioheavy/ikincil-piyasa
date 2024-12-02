@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { motion, useScroll, useTransform, useSpring } from "framer-motion"
-import { ArrowRight, TrendingUp, Users, Wallet2, ChevronRight, Sparkles, BarChart3, ArrowUpRight } from 'lucide-react'
+import { TrendingUp, Users, Wallet2, ChevronRight, Sparkles, BarChart3, ArrowUpRight } from 'lucide-react'
 import AnimatedBackground from "@/components/AnimatedBackground"
 import ParticleEffect from "@/components/ParticleEffect"
 import CountUp from "@/components/CountUp"
@@ -127,7 +127,20 @@ export default function HomePage() {
       
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center p-4 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-blue-500/5 via-purple-500/5 to-pink-500/5" />
+        <div className="absolute inset-0">
+          {/* Dinamik arka plan desenleri */}
+          <div className="absolute inset-0 opacity-30">
+            <div className="absolute top-0 -left-4 w-96 h-96 bg-purple-500 rounded-full mix-blend-multiply filter blur-xl animate-blob" />
+            <div className="absolute top-0 -right-4 w-96 h-96 bg-blue-500 rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-2000" />
+            <div className="absolute -bottom-8 left-20 w-96 h-96 bg-pink-500 rounded-full mix-blend-multiply filter blur-xl animate-blob animation-delay-4000" />
+          </div>
+          
+          {/* Izgara deseni */}
+          <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))] opacity-20" />
+          
+          {/* Gradient overlay */}
+          <div className="absolute inset-0 bg-gradient-to-b from-blue-500/5 via-purple-500/5 to-pink-500/5" />
+        </div>
         
         <motion.div
           onMouseMove={handleMouseMove}
@@ -160,7 +173,7 @@ export default function HomePage() {
                 }}
               />
               <span className="relative px-6 py-2 rounded-full bg-gradient-to-r from-blue-600/80 to-purple-600/80 text-white text-sm font-medium backdrop-blur-sm border border-white/10">
-              Lorem Ipsum
+                Yatırımın Geleceği Burada
                 <motion.div
                   className="absolute -right-2 -top-2"
                   animate={{
@@ -182,14 +195,27 @@ export default function HomePage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3 }}
-              className="text-5xl md:text-7xl font-bold mb-6"
+              className="text-5xl md:text-7xl font-bold mb-6 relative"
             >
-              <span className="inline-block bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">
-                Lorem Ipsum
-              </span>
+              <motion.span 
+                className="inline-block bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600"
+                animate={{
+                  backgroundPosition: ["0% 50%", "100% 50%", "0% 50%"],
+                }}
+                transition={{
+                  duration: 5,
+                  repeat: Infinity,
+                  ease: "linear",
+                }}
+                style={{
+                  backgroundSize: "200% 200%",
+                }}
+              >
+                Geleceğin Şirketlerine
+              </motion.span>
               <br />
               <span className="inline-block mt-2 relative">
-                Dolor Amet
+                Yatırım Yapın
                 <motion.div
                   className="absolute -right-12 -top-12 text-blue-500/20 dark:text-blue-400/20"
                   animate={{
@@ -202,21 +228,13 @@ export default function HomePage() {
                   }}
                 >
                   <svg className="w-24 h-24" viewBox="0 0 100 100">
-                    <path
-                      d="M50 0 A50 50 0 1 1 49.999999999999986 0"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="1"
-                    />
-                    <text
-                      x="50%"
-                      y="50%"
-                      textAnchor="middle"
-                      dy=".3em"
-                      className="text-xs font-medium"
-                      fill="currentColor"
-                    >
-
+                    <defs>
+                      <path id="circle" d="M50 0 A50 50 0 1 1 49.999999999999986 0" />
+                    </defs>
+                    <text>
+                      <textPath href="#circle" textLength="310">
+                        FUIP • FUIP • FUIP • FUIP • FUIP •
+                      </textPath>
                     </text>
                   </svg>
                 </motion.div>
@@ -229,9 +247,9 @@ export default function HomePage() {
               transition={{ delay: 0.4 }}
               className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 mb-12"
             >
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+              Türkiye&apos;nin en güvenilir kitle fonlama platformunda
               <br />
-              Vestibulum pulvinar sed eros nec ullamcorper.
+              yenilikçi girişimlere ortak olun.
             </motion.p>
 
             <motion.div
@@ -268,7 +286,7 @@ export default function HomePage() {
                     transition={{ duration: 0.5 }}
                   />
                   <span className="relative flex items-center gap-2">
-                  Lorem Ipsum
+                    Kampanyaları Keşfet
                     <ArrowUpRight className="w-5 h-5 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
                   </span>
                 </motion.div>
@@ -285,8 +303,8 @@ export default function HomePage() {
                 />
                 <motion.div className="relative px-8 py-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm text-gray-600 dark:text-gray-300 rounded-xl font-medium border border-gray-200/50 dark:border-gray-700/50 flex items-center gap-2">
                   <span className="flex items-center gap-2">
-                  Lorem Ipsum
-                    <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
+                    Nasıl Çalışır?
+                    <ArrowUpRight className="w-5 h-5 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
                   </span>
                 </motion.div>
               </MotionLink>
@@ -321,6 +339,12 @@ export default function HomePage() {
 
       {/* Stats Section */}
       <section className="py-32 relative">
+        {/* Arka plan efektleri */}
+        <div className="absolute inset-0">
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-blue-500/5 to-transparent" />
+          <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))] opacity-10" />
+        </div>
+
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             {stats.map((stat, index) => (
@@ -330,39 +354,69 @@ export default function HomePage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
-                className="relative group"
+                className="relative group animate-float"
                 whileHover={{ scale: 1.02 }}
               >
-                <motion.div
-                  className="absolute -inset-0.5 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl opacity-0 group-hover:opacity-100 transition duration-500"
-                  style={{ filter: "blur(8px)" }}
-                />
-                <div className="relative p-8 bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-2xl border border-gray-200/50 dark:border-gray-700/50">
-                  <div className="flex items-center gap-4 mb-4">
-                    <div className="p-3 bg-gradient-to-br from-blue-500/10 to-purple-500/10 dark:from-blue-500/20 dark:to-purple-500/20 rounded-xl">
-                      <stat.icon className="w-8 h-8 text-blue-600 dark:text-blue-400" />
-                    </div>
-                    <div>
-                      <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
-                        {stat.label}
-                      </h3>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">
-                        {stat.growth}
-                      </p>
+                {/* Arka plan efekti */}
+                <div className="absolute -inset-[1px] bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl opacity-0 group-hover:opacity-100 blur-lg transition-all duration-500 group-hover:duration-200" />
+                
+                {/* Ana kart */}
+                <div className="relative p-8 bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl border border-gray-200/50 dark:border-gray-700/50 h-full">
+                  {/* Üst kısım */}
+                  <div className="flex items-start justify-between mb-6">
+                    <div className="flex items-center gap-4">
+                      <div className="relative">
+                        <div className="absolute inset-0 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl blur opacity-50 group-hover:opacity-75 transition-opacity" />
+                        <div className="relative p-3 bg-gradient-to-br from-blue-500/10 to-purple-500/10 dark:from-blue-500/20 dark:to-purple-500/20 rounded-xl border border-white/10">
+                          <stat.icon className="w-8 h-8 text-blue-600 dark:text-blue-400" />
+                        </div>
+                      </div>
+                      <div>
+                        <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100">
+                          {stat.label}
+                        </h3>
+                        <div className="flex items-center gap-1 text-sm">
+                          <span className="text-emerald-600 dark:text-emerald-400 font-medium">
+                            {stat.growth}
+                          </span>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                  <div className="mb-4">
-                    <CountUp
-                      value={stat.value}
-                      prefix={stat.prefix}
-                      suffix={stat.suffix}
-                      duration={2}
+
+                  {/* Sayı */}
+                  <div className="mb-6">
+                    <div className="relative">
+                      <div className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 animate-shimmer" style={{ backgroundSize: '200% 100%' }}>
+                        <CountUp
+                          value={stat.value}
+                          prefix={stat.prefix}
+                          suffix={stat.suffix}
+                          duration={2}
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Grafik */}
+                  <div className="h-16 relative">
+                    <div className="absolute inset-0 bg-gradient-to-t from-white/50 to-transparent dark:from-gray-800/50 rounded-lg" />
+                    <TrendChart 
+                      data={stat.trend} 
+                      height={64}
+                      color="url(#stats-gradient)"
                     />
-                  </div>
-                  <div className="h-12">
-                    <TrendChart data={stat.trend} />
+                    <defs>
+                      <linearGradient id="stats-gradient" x1="0" x2="0" y1="0" y2="1">
+                        <stop offset="0%" stopColor="rgba(37, 99, 235, 0.5)" />
+                        <stop offset="100%" stopColor="rgba(37, 99, 235, 0)" />
+                      </linearGradient>
+                    </defs>
                   </div>
                 </div>
+
+                {/* Hover efekti */}
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-600/20 to-purple-600/20 rounded-2xl opacity-0 group-hover:opacity-100 blur-xl transition-all duration-500 -z-10" />
               </motion.div>
             ))}
           </div>
@@ -371,21 +425,48 @@ export default function HomePage() {
 
       {/* Featured Campaigns */}
       <section className="py-20 relative">
+        {/* Dinamik arka plan */}
+        <div className="absolute inset-0">
+          <div className="absolute inset-0 bg-gradient-to-t from-transparent via-purple-500/5 to-transparent" />
+          <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))] opacity-10" />
+          {/* Animasyonlu blob'lar */}
+          <div className="absolute inset-0 overflow-hidden">
+            <div className="absolute top-1/4 -right-1/4 w-1/2 h-1/2 bg-gradient-conic from-purple-500/30 via-purple-500/0 to-purple-500/30 
+              blur-3xl rounded-full mix-blend-multiply animate-blob opacity-70" />
+            <div className="absolute -bottom-1/4 left-1/4 w-1/2 h-1/2 bg-gradient-conic from-blue-500/30 via-blue-500/0 to-blue-500/30 
+              blur-3xl rounded-full mix-blend-multiply animate-blob animation-delay-2000 opacity-70" />
+          </div>
+        </div>
+
         <div className="container mx-auto px-4">
+          {/* Başlık */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-center mb-12"
+            className="text-center mb-16 relative"
           >
-            <h2 className="text-3xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">
+            <motion.div
+              className="absolute -top-12 left-1/2 -translate-x-1/2 w-40 h-40 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-full blur-3xl"
+              animate={{
+                scale: [1, 1.2, 1],
+                opacity: [0.3, 0.5, 0.3],
+              }}
+              transition={{
+                duration: 4,
+                repeat: Infinity,
+                repeatType: "reverse",
+              }}
+            />
+            <h2 className="text-4xl md:text-5xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">
               Öne Çıkan Kampanyalar
             </h2>
-            <p className="text-gray-600 dark:text-gray-300">
+            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
               En çok ilgi gören yatırım fırsatlarını keşfedin
             </p>
           </motion.div>
 
+          {/* Kampanya Kartları */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {featuredCampaigns.map((campaign, index) => (
               <motion.div
@@ -394,90 +475,188 @@ export default function HomePage() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
+                whileHover={{ scale: 1.02, rotateY: 5, rotateX: -5 }}
                 className="relative group"
+                style={{ perspective: "1000px" }}
               >
+                {/* Arka plan efektleri */}
+                <div className="absolute -inset-[1px] bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl opacity-0 group-hover:opacity-100 blur-lg transition-all duration-500 group-hover:duration-200" />
+                
+                {/* Ana kart */}
                 <motion.div
-                  className="absolute -inset-0.5 bg-gradient-to-r from-blue-600 to-purple-600 rounded-2xl opacity-0 group-hover:opacity-100 transition duration-500"
-                  style={{ filter: "blur(8px)" }}
-                />
-                <div className="relative p-6 bg-white/70 dark:bg-gray-800/70 backdrop-blur-xl rounded-2xl border border-gray-200/50 dark:border-gray-700/50">
-                  <div className="mb-4">
-                    <span className="px-3 py-1 text-sm bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full">
-                      {campaign.category}
-                    </span>
+                  className="relative bg-white/80 dark:bg-gray-800/80 backdrop-blur-xl rounded-2xl border border-gray-200/50 dark:border-gray-700/50 overflow-hidden"
+                  style={{ transformStyle: "preserve-3d" }}
+                >
+                  {/* Üst kısım - Görsel ve Kategori */}
+                  <div className="relative h-48 overflow-hidden">
+                    {/* Gradient overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-b from-transparent to-white/80 dark:to-gray-800/80 z-10" />
+                    
+                    {/* Animasyonlu arka plan */}
+                    <motion.div
+                      className="absolute inset-0 bg-gradient-to-br from-blue-500/20 to-purple-500/20"
+                      animate={{
+                        backgroundPosition: ["0% 0%", "100% 100%"],
+                      }}
+                      transition={{
+                        duration: 10,
+                        repeat: Infinity,
+                        repeatType: "reverse",
+                      }}
+                      style={{ backgroundSize: "200% 200%" }}
+                    />
+                    
+                    {/* Kategori etiketi */}
+                    <motion.div
+                      className="absolute top-4 left-4 z-20"
+                      whileHover={{ scale: 1.05 }}
+                    >
+                      <span className="px-4 py-2 rounded-full bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm text-blue-600 dark:text-blue-400 text-sm font-medium border border-blue-200/50 dark:border-blue-800/50 shadow-lg">
+                        {campaign.category}
+                      </span>
+                    </motion.div>
+
+                    {/* Trend ve yatırımcı sayısı */}
+                    <motion.div
+                      className="absolute top-4 right-4 z-20 flex items-center gap-2"
+                      animate={campaign.trend === "trending_up" ? 
+                        { y: [0, -4, 0], scale: [1, 1.1, 1] } : 
+                        { y: [0, 4, 0], scale: [1, 0.9, 1] }
+                      }
+                      transition={{ duration: 2, repeat: Infinity }}
+                    >
+                      <span className="px-4 py-2 rounded-full bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm text-emerald-600 dark:text-emerald-400 text-sm font-medium border border-emerald-200/50 dark:border-emerald-800/50 shadow-lg flex items-center gap-1">
+                        {campaign.trend === "trending_up" ? "↗" : "↘"}
+                        {campaign.investors} yatırımcı
+                      </span>
+                    </motion.div>
                   </div>
-                  <h3 className="text-xl font-bold mb-2 text-gray-900 dark:text-gray-100">
-                    {campaign.title}
-                  </h3>
-                  <p className="text-gray-600 dark:text-gray-300 mb-4">
-                    {campaign.description}
-                  </p>
-                  <div className="space-y-4">
-                    <div>
-                      <div className="flex justify-between text-sm mb-1">
-                        <span className="text-gray-600 dark:text-gray-300">Toplanan</span>
-                        <span className="font-medium text-gray-900 dark:text-gray-100">
-                          ₺{campaign.raised.toLocaleString()}
-                        </span>
+
+                  {/* İçerik */}
+                  <div className="p-6">
+                    {/* Başlık */}
+                    <motion.h3
+                      className="text-2xl font-bold mb-3 bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600 dark:from-gray-100 dark:to-gray-400"
+                      style={{ transformStyle: "preserve-3d" }}
+                      whileHover={{ translateZ: 20 }}
+                    >
+                      {campaign.title}
+                    </motion.h3>
+
+                    {/* Açıklama */}
+                    <motion.p
+                      className="text-gray-600 dark:text-gray-300 mb-6 line-clamp-2"
+                      style={{ transformStyle: "preserve-3d" }}
+                      whileHover={{ translateZ: 10 }}
+                    >
+                      {campaign.description}
+                    </motion.p>
+
+                    {/* İlerleme bilgisi */}
+                    <div className="space-y-4">
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-gray-500 dark:text-gray-400">Hedef</span>
+                        <motion.span
+                          className="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600"
+                          animate={{ scale: [1, 1.05, 1] }}
+                          transition={{ duration: 2, repeat: Infinity }}
+                        >
+                          ₺{campaign.goal.toLocaleString()}
+                        </motion.span>
                       </div>
-                      <div className="h-2 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+
+                      {/* İlerleme çubuğu */}
+                      <div className="relative h-3 bg-gray-100 dark:bg-gray-700 rounded-full overflow-hidden">
                         <motion.div
-                          className="h-full bg-gradient-to-r from-blue-600 to-purple-600"
+                          className="absolute inset-y-0 left-0 rounded-full"
+                          style={{
+                            background: "linear-gradient(90deg, #3B82F6 0%, #8B5CF6 50%, #3B82F6 100%)",
+                            backgroundSize: "200% 100%",
+                          }}
                           initial={{ width: 0 }}
                           whileInView={{ width: `${campaign.progress}%` }}
                           viewport={{ once: true }}
                           transition={{ duration: 1, ease: "easeOut" }}
-                        />
+                          animate={{
+                            backgroundPosition: ["0% 0%", "100% 0%"],
+                          }}
+                          transition={{
+                            duration: 3,
+                            repeat: Infinity,
+                            repeatType: "reverse",
+                          }}
+                        >
+                          <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent animate-shimmer" />
+                        </motion.div>
+                      </div>
+
+                      {/* Alt bilgiler */}
+                      <div className="flex justify-between items-center">
+                        <motion.div
+                          className="flex items-center gap-1 text-sm text-gray-500 dark:text-gray-400"
+                          animate={{ opacity: [0.5, 1, 0.5] }}
+                          transition={{ duration: 2, repeat: Infinity }}
+                        >
+                          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                          {campaign.daysLeft} gün kaldı
+                        </motion.div>
+                        <span className="text-sm font-medium text-gray-900 dark:text-gray-100">
+                          %{campaign.progress} tamamlandı
+                        </span>
                       </div>
                     </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-gray-600 dark:text-gray-300">
-                        {campaign.daysLeft} gün kaldı
-                      </span>
-                      <span className="font-medium text-gray-900 dark:text-gray-100">
-                        %{campaign.progress}
-                      </span>
-                    </div>
+
+                    {/* Detay butonu */}
+                    <Link href={`/campaigns/${campaign.id}`} className="block mt-6">
+                      <motion.button
+                        className="w-full relative group/button"
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                      >
+                        <div className="absolute -inset-1 bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl opacity-70 blur transition duration-200 group-hover/button:opacity-100 group-hover/button:duration-200" />
+                        <div className="relative px-6 py-3.5 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg">
+                          <div className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent opacity-0 group-hover/button:opacity-100 transition-opacity rounded-lg overflow-hidden">
+                            <motion.div
+                              className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent"
+                              initial={{ x: '-100%' }}
+                              whileHover={{ x: '100%' }}
+                              transition={{ duration: 0.5 }}
+                            />
+                          </div>
+                          <span className="relative flex items-center justify-center gap-2 text-white font-medium">
+                            Detayları Gör
+                            <ArrowUpRight className="w-4 h-4 transition-transform group-hover/button:translate-x-1 group-hover/button:-translate-y-1" />
+                          </span>
+                        </div>
+                      </motion.button>
+                    </Link>
                   </div>
-                  <Link href={`/campaigns/${campaign.id}`}>
-                    <motion.button
-                      className="w-full mt-6 px-4 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl hover:from-blue-700 hover:to-purple-700 transition-all group overflow-hidden relative"
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                    >
-                      <motion.div
-                        className="absolute inset-0 bg-gradient-to-r from-white/20 to-transparent"
-                        initial={{ x: "-100%" }}
-                        whileHover={{ x: "100%" }}
-                        transition={{ duration: 0.5 }}
-                      />
-                      <span className="flex items-center justify-center gap-2">
-                        Detayları Gör
-                        <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
-                      </span>
-                    </motion.button>
-                  </Link>
-                </div>
+                </motion.div>
               </motion.div>
             ))}
           </div>
 
+          {/* Tüm kampanyalar butonu */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-center mt-12"
+            className="text-center mt-16"
           >
             <Link href="/campaigns">
               <motion.button
-                className="px-8 py-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm text-gray-600 dark:text-gray-300 rounded-xl hover:bg-white dark:hover:bg-gray-800 transition-all border border-gray-200/50 dark:border-gray-700/50 group"
+                className="relative group inline-block"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
-                <span className="flex items-center gap-2">
-                  Tüm Kampanyaları Gör
-                  <ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
-                </span>
+                <div className="absolute -inset-1 bg-gradient-to-r from-gray-200 to-gray-300 dark:from-gray-700 dark:to-gray-800 rounded-xl opacity-50 blur transition duration-200 group-hover:opacity-75 group-hover:duration-200" />
+                <div className="relative px-8 py-4 bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm text-gray-600 dark:text-gray-300 rounded-lg font-medium border border-gray-200/50 dark:border-gray-700/50 flex items-center gap-2 overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-r from-gray-100 to-transparent dark:from-gray-700 dark:to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
+                  <span className="relative flex items-center gap-2">
+                    Tüm Kampanyaları Gör
+                    <ArrowUpRight className="w-5 h-5 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
+                  </span>
+                </div>
               </motion.button>
             </Link>
           </motion.div>
@@ -486,3 +665,4 @@ export default function HomePage() {
     </main>
   )
 }
+
