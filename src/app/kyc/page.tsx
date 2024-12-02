@@ -761,106 +761,146 @@ export default function KYCPage() {
                           <div className="relative">
                             {formData.selfie ? (
                               <div className="relative w-full h-48 bg-gray-800/50 rounded-lg overflow-hidden">
+                                {/* Yüklenen Görsel Arka Planı */}
+                                <div 
+                                  className="absolute inset-0 bg-center bg-cover bg-no-repeat blur-sm"
+                                  style={{
+                                    backgroundImage: `url(${URL.createObjectURL(formData.selfie)})`,
+                                    filter: 'brightness(0.5) contrast(1.2)'
+                                  }}
+                                />
+                                
                                 <div className="absolute inset-0 flex items-center justify-center">
-                                  <motion.div 
-                                    className={`w-[180px] h-[180px] rounded-full border-2 border-dashed relative ${
-                                      selfieVerified 
-                                        ? "border-emerald-500 bg-emerald-900/20" 
-                                        : "border-gray-600 bg-gray-700/50"
-                                    }`}
-                                  >
-                                    {/* Yüz Analiz Şablonu */}
-                                    <motion.div 
-                                      className={`absolute inset-4 rounded-full ${
-                                        selfieVerified ? "border-2 border-emerald-500" : "border-2 border-gray-600"
-                                      }`}
-                                      animate={selfieVerified ? {
-                                        opacity: [0.5, 0.8, 0.5],
-                                        scale: [1, 1.02, 1],
-                                      } : {}}
-                                      transition={{
-                                        duration: 2,
-                                        repeat: Infinity,
-                                        ease: "easeInOut"
+                                  {/* Görsel Önizleme */}
+                                  <div className="relative w-[180px] h-[180px] rounded-full overflow-hidden">
+                                    <div 
+                                      className="absolute inset-0 bg-center bg-cover bg-no-repeat"
+                                      style={{
+                                        backgroundImage: `url(${URL.createObjectURL(formData.selfie)})`
                                       }}
                                     />
                                     
-                                    {/* Yüz Hatları Animasyonu */}
-                                    {selfieScanning && (
-                                      <>
-                                        {/* Yatay Tarama Çizgisi */}
-                                        <motion.div 
-                                          className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-emerald-500 to-transparent"
-                                          animate={{
-                                            y: [0, 180, 0],
-                                          }}
-                                          transition={{
-                                            duration: 2,
-                                            ease: "linear",
-                                            repeat: Infinity,
-                                          }}
-                                        />
-                                        
-                                        {/* Yüz Tanıma Noktaları */}
-                                        <motion.div 
-                                          className="absolute inset-8"
-                                          initial={false}
-                                          animate={{
-                                            opacity: [0, 1, 0],
-                                          }}
-                                          transition={{
-                                            duration: 1.5,
-                                            repeat: Infinity,
-                                            ease: "easeInOut",
-                                          }}
-                                        >
-                                          {/* Göz Noktaları */}
-                                          <div className="absolute top-1/3 left-1/3 w-1 h-1 bg-emerald-500 rounded-full" />
-                                          <div className="absolute top-1/3 right-1/3 w-1 h-1 bg-emerald-500 rounded-full" />
-                                          
-                                          {/* Burun ve Ağız Noktaları */}
-                                          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 w-1 h-1 bg-emerald-500 rounded-full" />
-                                          <div className="absolute bottom-1/3 left-1/2 -translate-x-1/2 w-1 h-1 bg-emerald-500 rounded-full" />
-                                          
-                                          {/* Yüz Çerçevesi */}
+                                    {/* Analiz Katmanı */}
+                                    <motion.div 
+                                      className={`absolute inset-0 rounded-full ${
+                                        selfieVerified 
+                                          ? "bg-emerald-500/10 backdrop-blur-[2px]" 
+                                          : "bg-gray-900/20 backdrop-blur-[2px]"
+                                      }`}
+                                    >
+                                      {/* Yüz Analiz Çerçevesi */}
+                                      <motion.div 
+                                        className={`absolute inset-4 rounded-full border-2 ${
+                                          selfieVerified ? "border-emerald-500" : "border-gray-400"
+                                        }`}
+                                        animate={selfieVerified ? {
+                                          opacity: [0.5, 0.8, 0.5],
+                                          scale: [1, 1.02, 1],
+                                        } : {}}
+                                        transition={{
+                                          duration: 2,
+                                          repeat: Infinity,
+                                          ease: "easeInOut"
+                                        }}
+                                      />
+                                      
+                                      {/* Yüz Hatları Animasyonu */}
+                                      {selfieScanning && (
+                                        <>
+                                          {/* Yatay Tarama Çizgisi */}
                                           <motion.div 
-                                            className="absolute inset-0 border-2 border-dashed border-emerald-500/50 rounded-full"
+                                            className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-emerald-500 to-transparent"
                                             animate={{
-                                              rotate: 360,
+                                              y: [0, 180, 0],
                                             }}
                                             transition={{
-                                              duration: 8,
-                                              repeat: Infinity,
+                                              duration: 2,
                                               ease: "linear",
+                                              repeat: Infinity,
                                             }}
                                           />
-                                        </motion.div>
+                                          
+                                          {/* Yüz Tanıma Noktaları */}
+                                          <motion.div 
+                                            className="absolute inset-8"
+                                            initial={false}
+                                            animate={{
+                                              opacity: [0, 1, 0],
+                                            }}
+                                            transition={{
+                                              duration: 1.5,
+                                              repeat: Infinity,
+                                              ease: "easeInOut",
+                                            }}
+                                          >
+                                            {/* Göz Noktaları */}
+                                            <div className="absolute top-1/3 left-1/3 w-1 h-1 bg-emerald-500 rounded-full shadow-lg shadow-emerald-500/50" />
+                                            <div className="absolute top-1/3 right-1/3 w-1 h-1 bg-emerald-500 rounded-full shadow-lg shadow-emerald-500/50" />
+                                            
+                                            {/* Burun ve Ağız Noktaları */}
+                                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 w-1 h-1 bg-emerald-500 rounded-full shadow-lg shadow-emerald-500/50" />
+                                            <div className="absolute bottom-1/3 left-1/2 -translate-x-1/2 w-1 h-1 bg-emerald-500 rounded-full shadow-lg shadow-emerald-500/50" />
+                                            
+                                            {/* Yüz Çerçevesi */}
+                                            <motion.div 
+                                              className="absolute inset-0 border-2 border-dashed border-emerald-500/50 rounded-full"
+                                              animate={{
+                                                rotate: 360,
+                                              }}
+                                              transition={{
+                                                duration: 8,
+                                                repeat: Infinity,
+                                                ease: "linear",
+                                              }}
+                                            />
 
-                                        {/* Progress Göstergesi */}
-                                        <div className="absolute inset-0 flex items-center justify-center">
-                                          <div className="bg-black/60 backdrop-blur-sm px-4 py-2 rounded-full flex items-center gap-2">
-                                            <Scan className="w-4 h-4 text-emerald-500" />
-                                            <span className="text-xs text-emerald-500">Yüz Analizi... {selfieProgress}%</span>
+                                            {/* Yüz Ölçüm Çizgileri */}
+                                            <motion.div
+                                              className="absolute inset-0"
+                                              animate={{
+                                                opacity: [0, 1, 0],
+                                              }}
+                                              transition={{
+                                                duration: 2,
+                                                repeat: Infinity,
+                                                ease: "easeInOut",
+                                                delay: 0.5,
+                                              }}
+                                            >
+                                              <div className="absolute top-1/3 left-1/4 right-1/4 h-[1px] bg-emerald-500/50" />
+                                              <div className="absolute top-1/2 left-1/3 right-1/3 h-[1px] bg-emerald-500/50" />
+                                              <div className="absolute bottom-1/3 left-1/3 right-1/3 h-[1px] bg-emerald-500/50" />
+                                              <div className="absolute top-1/4 bottom-1/4 left-1/3 w-[1px] bg-emerald-500/50" />
+                                              <div className="absolute top-1/4 bottom-1/4 right-1/3 w-[1px] bg-emerald-500/50" />
+                                            </motion.div>
+                                          </motion.div>
+
+                                          {/* Progress Göstergesi */}
+                                          <div className="absolute inset-0 flex items-center justify-center">
+                                            <div className="bg-black/60 backdrop-blur-sm px-4 py-2 rounded-full flex items-center gap-2">
+                                              <Scan className="w-4 h-4 text-emerald-500" />
+                                              <span className="text-xs text-emerald-500">Yüz Analizi... {selfieProgress}%</span>
+                                            </div>
                                           </div>
-                                        </div>
-                                      </>
-                                    )}
+                                        </>
+                                      )}
 
-                                    {/* Onay Animasyonu */}
-                                    {selfieVerified && !selfieScanning && (
-                                      <motion.div 
-                                        className="absolute inset-0 flex items-center justify-center"
-                                        initial={{ opacity: 0, scale: 0.5 }}
-                                        animate={{ opacity: 1, scale: 1 }}
-                                        transition={{ type: "spring", duration: 0.5 }}
-                                      >
-                                        <div className="bg-emerald-500/20 backdrop-blur-sm px-4 py-2 rounded-full flex items-center gap-2 border border-emerald-500/50">
-                                          <CheckCircle2 className="w-4 h-4 text-emerald-500" />
-                                          <span className="text-xs text-emerald-500">Yüz Doğrulandı</span>
-                                        </div>
-                                      </motion.div>
-                                    )}
-                                  </motion.div>
+                                      {/* Onay Animasyonu */}
+                                      {selfieVerified && !selfieScanning && (
+                                        <motion.div 
+                                          className="absolute inset-0 flex items-center justify-center"
+                                          initial={{ opacity: 0, scale: 0.5 }}
+                                          animate={{ opacity: 1, scale: 1 }}
+                                          transition={{ type: "spring", duration: 0.5 }}
+                                        >
+                                          <div className="bg-black/60 backdrop-blur-sm px-4 py-2 rounded-full flex items-center gap-2 border border-emerald-500/50">
+                                            <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                                            <span className="text-xs text-emerald-500">Yüz Doğrulandı</span>
+                                          </div>
+                                        </motion.div>
+                                      )}
+                                    </motion.div>
+                                  </div>
                                 </div>
                               </div>
                             ) : (
