@@ -1,101 +1,152 @@
-import Image from "next/image";
+"use client"
+
+import Link from "next/link"
+import { useRouter } from "next/navigation"
+import { useAppStore } from "@/lib/store"
+import { useState } from "react"
 
 export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+  const router = useRouter()
+  const { isAuthenticated, user, logout } = useAppStore()
+  const [isLoggingOut, setIsLoggingOut] = useState(false)
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
+  const handleLogout = async () => {
+    try {
+      setIsLoggingOut(true)
+      await logout()
+      router.push("/auth/login")
+    } catch (error) {
+      console.error("Çıkış yapılırken bir hata oluştu:", error)
+      // Hata durumunda kullanıcıya bilgi verilebilir
+    } finally {
+      setIsLoggingOut(false)
+    }
+  }
+
+  return (
+    <main className="flex min-h-screen flex-col items-center p-8">
+      <div className="w-full max-w-7xl">
+        <header className="flex justify-between items-center mb-16">
+          <Link href="/" className="text-2xl font-bold">
+            PayBorsa
+          </Link>
+          <div className="flex gap-4 items-center">
+            {isAuthenticated ? (
+              <>
+                <span className="text-gray-600">
+                  Hoş geldin, {user?.name}
+                </span>
+                <Link
+                  href="/profile"
+                  className="px-4 py-2 text-blue-600 hover:text-blue-700 transition"
+                >
+                  Profilim
+                </Link>
+                <button
+                  onClick={handleLogout}
+                  disabled={isLoggingOut}
+                  className="px-4 py-2 text-red-600 hover:text-red-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  {isLoggingOut ? "Çıkış Yapılıyor..." : "Çıkış Yap"}
+                </button>
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/auth/login"
+                  className="px-4 py-2 text-blue-600 hover:text-blue-700 transition"
+                >
+                  Giriş Yap
+                </Link>
+                <Link
+                  href="/auth/register"
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+                >
+                  Kayıt Ol
+                </Link>
+              </>
+            )}
+          </div>
+        </header>
+
+        <section className="text-center mb-16">
+          <h1 className="text-5xl font-bold mb-4">
+            Kitlesel Fonlama Payları Borsası
+          </h1>
+          <p className="text-xl text-gray-600 dark:text-gray-300 mb-8">
+            Türkiye&apos;nin ilk kitlesel fonlama pay alım satım platformu
+          </p>
+          <div className="flex gap-4 justify-center">
+            <Link 
+              href="/market"
+              className="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition"
+            >
+              Pazar Yerini Keşfet
+            </Link>
+            <Link
+              href="/campaigns"
+              className="bg-gray-100 text-gray-800 px-6 py-3 rounded-lg hover:bg-gray-200 transition dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700"
+            >
+              Aktif Kampanyalar
+            </Link>
+          </div>
+        </section>
+
+        <section className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+          <div className="p-6 bg-white dark:bg-gray-800 rounded-xl shadow-lg">
+            <h3 className="text-xl font-semibold mb-2">Güvenli İşlem</h3>
+            <p className="text-gray-600 dark:text-gray-300">
+              SPK düzenlemeleri çerçevesinde güvenli alım satım imkanı
+            </p>
+          </div>
+          <div className="p-6 bg-white dark:bg-gray-800 rounded-xl shadow-lg">
+            <h3 className="text-xl font-semibold mb-2">7/24 İşlem</h3>
+            <p className="text-gray-600 dark:text-gray-300">
+              Dilediğiniz zaman alım satım yapabilme esnekliği
+            </p>
+          </div>
+          <div className="p-6 bg-white dark:bg-gray-800 rounded-xl shadow-lg">
+            <h3 className="text-xl font-semibold mb-2">Kolay Kullanım</h3>
+            <p className="text-gray-600 dark:text-gray-300">
+              Kullanıcı dostu arayüz ile hızlı işlem deneyimi
+            </p>
+          </div>
+        </section>
+
+        <section className="text-center mb-16">
+          <h2 className="text-3xl font-bold mb-4">Nasıl Çalışır?</h2>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div className="p-4">
+              <div className="text-2xl font-bold text-blue-600 mb-2">1</div>
+              <h3 className="font-semibold mb-2">Üye Ol</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-300">
+                Hızlı üyelik süreciyle platformumuza katılın
+              </p>
+            </div>
+            <div className="p-4">
+              <div className="text-2xl font-bold text-blue-600 mb-2">2</div>
+              <h3 className="font-semibold mb-2">Kimlik Doğrulama</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-300">
+                KYC sürecini tamamlayarak işlemlere başlayın
+              </p>
+            </div>
+            <div className="p-4">
+              <div className="text-2xl font-bold text-blue-600 mb-2">3</div>
+              <h3 className="font-semibold mb-2">Bakiye Yükle</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-300">
+                Güvenli ödeme yöntemleriyle hesabınıza bakiye ekleyin
+              </p>
+            </div>
+            <div className="p-4">
+              <div className="text-2xl font-bold text-blue-600 mb-2">4</div>
+              <h3 className="font-semibold mb-2">İşlem Yap</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-300">
+                Pay alım satım işlemlerinizi gerçekleştirin
+              </p>
+            </div>
+          </div>
+        </section>
+      </div>
+    </main>
+  )
 }

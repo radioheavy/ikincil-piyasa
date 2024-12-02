@@ -1,0 +1,91 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  name          String
+  passwordHash  String
+  phone         String?
+  kycStatus     String    @default("pending") // pending, approved, rejected
+  walletBalance Float     @default(0)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  shares        Share[]
+  documents     Document[]
+  soldTrades    Trade[]   @relation("seller")
+  boughtTrades  Trade[]   @relation("buyer")
+}
+
+model Campaign {
+  id              String    @id @default(uuid())
+  name            String
+  company         String
+  description     String
+  targetAmount    Float
+  collectedAmount Float     @default(0)
+  sharePrice      Float
+  totalShares     Int
+  remainingShares Int
+  startDate       DateTime
+  endDate         DateTime
+  status          String    @default("active") // active, completed, failed
+  category        String
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  shares          Share[]
+  trades          Trade[]
+  documents       Document[]
+}
+
+model Share {
+  id            String    @id @default(uuid())
+  campaignId    String
+  campaign      Campaign  @relation(fields: [campaignId], references: [id])
+  ownerId       String
+  owner         User      @relation(fields: [ownerId], references: [id])
+  quantity      Int
+  purchasePrice Float
+  currentPrice  Float
+  purchaseDate  DateTime  @default(now())
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  trades        Trade[]
+}
+
+model Trade {
+  id          String    @id @default(uuid())
+  shareId     String
+  share       Share     @relation(fields: [shareId], references: [id])
+  campaignId  String
+  campaign    Campaign  @relation(fields: [campaignId], references: [id])
+  sellerId    String
+  seller      User      @relation("seller", fields: [sellerId], references: [id])
+  buyerId     String
+  buyer       User      @relation("buyer", fields: [buyerId], references: [id])
+  quantity    Int
+  price       Float
+  status      String    @default("pending") // pending, completed, cancelled
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+model Document {
+  id          String    @id @default(uuid())
+  title       String
+  type        String    // financial, legal, other
+  url         String
+  uploadDate  DateTime  @default(now())
+  userId      String?
+  user        User?     @relation(fields: [userId], references: [id])
+  campaignId  String?
+  campaign    Campaign? @relation(fields: [campaignId], references: [id])
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+} 
