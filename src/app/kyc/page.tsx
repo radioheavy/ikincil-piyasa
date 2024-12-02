@@ -18,13 +18,20 @@ import {
 import AnimatedBackground from "@/components/AnimatedBackground"
 
 type KYCStep = "personal" | "address" | "documents" | "verification" | "complete"
+type DocumentStep = "front" | "back" | "selfie" | "address"
 
 export default function KYCPage() {
   const [currentStep, setCurrentStep] = useState<KYCStep>("personal")
+  const [currentDocStep, setCurrentDocStep] = useState<DocumentStep>("front")
   const [frontScanning, setFrontScanning] = useState(false)
   const [backScanning, setBackScanning] = useState(false)
+  const [selfieScanning, setSelfieScanning] = useState(false)
   const [frontProgress, setFrontProgress] = useState(0)
   const [backProgress, setBackProgress] = useState(0)
+  const [selfieProgress, setSelfieProgress] = useState(0)
+  const [frontVerified, setFrontVerified] = useState(false)
+  const [backVerified, setBackVerified] = useState(false)
+  const [selfieVerified, setSelfieVerified] = useState(false)
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -72,12 +79,37 @@ export default function KYCPage() {
     }
   ]
 
+  const documentSteps: { id: DocumentStep; title: string; description: string }[] = [
+    {
+      id: "front",
+      title: "Kimlik Ön Yüz",
+      description: "Kimliğinizin ön yüzünü yükleyin"
+    },
+    {
+      id: "back",
+      title: "Kimlik Arka Yüz",
+      description: "Kimliğinizin arka yüzünü yükleyin"
+    },
+    {
+      id: "selfie",
+      title: "Selfie",
+      description: "Kimliğinizle birlikte selfie çekin"
+    },
+    {
+      id: "address",
+      title: "İkametgah",
+      description: "İkametgah belgenizi yükleyin"
+    }
+  ]
+
   const startScanning = (side: 'front' | 'back') => {
     const setScanning = side === 'front' ? setFrontScanning : setBackScanning
     const setProgress = side === 'front' ? setFrontProgress : setBackProgress
+    const setVerified = side === 'front' ? setFrontVerified : setBackVerified
     
     setScanning(true)
     setProgress(0)
+    setVerified(false)
     
     let progress = 0
     const interval = setInterval(() => {
@@ -88,6 +120,27 @@ export default function KYCPage() {
         setTimeout(() => {
           setScanning(false)
           setProgress(0)
+          setVerified(true)
+        }, 500)
+      }
+    }, 50)
+  }
+
+  const startSelfieAnalysis = () => {
+    setSelfieScanning(true)
+    setSelfieProgress(0)
+    setSelfieVerified(false)
+    
+    let progress = 0
+    const interval = setInterval(() => {
+      progress += 2
+      setSelfieProgress(progress)
+      if (progress >= 100) {
+        clearInterval(interval)
+        setTimeout(() => {
+          setSelfieScanning(false)
+          setSelfieProgress(0)
+          setSelfieVerified(true)
         }, 500)
       }
     }, 50)
@@ -100,11 +153,12 @@ export default function KYCPage() {
         [field]: e.target.files![0]
       }))
       
-      // Tarama animasyonunu başlat
       if (field === 'idFront') {
         startScanning('front')
       } else if (field === 'idBack') {
         startScanning('back')
+      } else if (field === 'selfie') {
+        startSelfieAnalysis()
       }
     }
   }
@@ -366,189 +420,531 @@ export default function KYCPage() {
 
               {/* Documents Step */}
               {currentStep === "documents" && (
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-xs text-gray-400 mb-1">Kimlik Ön Yüz</label>
-                    <div className="relative group">
-                      <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg opacity-25 group-hover:opacity-50 transition duration-1000" />
-                      <div className="relative">
-                        {formData.idFront ? (
-                          <div className="relative w-full h-48 bg-gray-800/50 rounded-lg overflow-hidden">
-                            <div className="absolute inset-0 flex items-center justify-center">
-                              <div className="w-[280px] h-[180px] bg-gray-700/50 rounded-lg border-2 border-dashed border-gray-600 relative">
-                                {/* Kimlik Şablonu */}
-                                <div className="absolute top-4 left-4 w-24 h-32 bg-gray-600/50 rounded" />
-                                <div className="absolute top-4 right-4 w-32 h-8 bg-gray-600/50 rounded" />
-                                <div className="absolute bottom-4 left-4 right-4 h-16 space-y-2">
-                                  <div className="w-full h-3 bg-gray-600/50 rounded" />
-                                  <div className="w-2/3 h-3 bg-gray-600/50 rounded" />
-                                  <div className="w-1/2 h-3 bg-gray-600/50 rounded" />
+                <div className="space-y-6">
+                  {/* Document Progress Steps */}
+                  <div className="flex justify-between mb-6">
+                    {documentSteps.map((step, index) => (
+                      <div key={step.id} className="flex-1">
+                        <div className="relative flex items-center justify-center">
+                          <motion.div
+                            className={`w-8 h-8 rounded-full flex items-center justify-center text-xs ${
+                              documentSteps.findIndex(s => s.id === currentDocStep) >= index
+                                ? "bg-gradient-to-r from-blue-500 to-purple-500 text-white"
+                                : "bg-gray-800 text-gray-400"
+                            }`}
+                            animate={{
+                              scale: currentDocStep === step.id ? [1, 1.1, 1] : 1
+                            }}
+                            transition={{ duration: 0.5, repeat: currentDocStep === step.id ? Infinity : 0 }}
+                          >
+                            {documentSteps.findIndex(s => s.id === currentDocStep) > index ? (
+                              <CheckCircle2 className="w-4 h-4" />
+                            ) : (
+                              <span>{index + 1}</span>
+                            )}
+                          </motion.div>
+                          {index < documentSteps.length - 1 && (
+                            <div className={`absolute left-1/2 w-full h-0.5 ${
+                              documentSteps.findIndex(s => s.id === currentDocStep) > index
+                                ? "bg-gradient-to-r from-blue-500 to-purple-500"
+                                : "bg-gray-800"
+                            }`} />
+                          )}
+                        </div>
+                        <div className="text-center mt-2">
+                          <div className="text-xs font-medium text-gray-300">{step.title}</div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Document Upload Forms */}
+                  <motion.div
+                    key={currentDocStep}
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    className="space-y-4"
+                  >
+                    {/* Kimlik Ön Yüz */}
+                    {currentDocStep === "front" && (
+                      <div>
+                        <div className="text-sm font-medium mb-4">Kimlik Kartı Ön Yüz</div>
+                        <div className="relative group">
+                          <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg opacity-25 group-hover:opacity-50 transition duration-1000" />
+                          <div className="relative">
+                            {formData.idFront ? (
+                              <div className="relative w-full h-48 bg-gray-800/50 rounded-lg overflow-hidden">
+                                <div className="absolute inset-0 flex items-center justify-center">
+                                  <motion.div 
+                                    className={`w-[280px] h-[180px] rounded-lg border-2 border-dashed relative ${
+                                      frontVerified 
+                                        ? "border-emerald-500 bg-emerald-900/20" 
+                                        : "border-gray-600 bg-gray-700/50"
+                                    }`}
+                                  >
+                                    {/* Kimlik Şablonu */}
+                                    <motion.div 
+                                      className={`absolute top-4 left-4 w-24 h-32 rounded ${
+                                        frontVerified ? "bg-emerald-500/50" : "bg-gray-600/50"
+                                      }`}
+                                      animate={frontVerified ? {
+                                        opacity: [0.5, 0.8, 0.5],
+                                        scale: [1, 1.02, 1],
+                                      } : {}}
+                                      transition={{
+                                        duration: 2,
+                                        repeat: Infinity,
+                                        ease: "easeInOut"
+                                      }}
+                                    />
+                                    <motion.div 
+                                      className={`absolute top-4 right-4 w-32 h-8 rounded ${
+                                        frontVerified ? "bg-emerald-500/50" : "bg-gray-600/50"
+                                      }`}
+                                      animate={frontVerified ? {
+                                        opacity: [0.5, 0.8, 0.5],
+                                      } : {}}
+                                      transition={{
+                                        duration: 2,
+                                        repeat: Infinity,
+                                        ease: "easeInOut",
+                                        delay: 0.3
+                                      }}
+                                    />
+                                    <div className="absolute bottom-4 left-4 right-4 h-16 space-y-2">
+                                      {[1, 2, 3].map((_, i) => (
+                                        <motion.div
+                                          key={i}
+                                          className={`w-${4-i}/4 h-3 rounded ${
+                                            frontVerified ? "bg-emerald-500/50" : "bg-gray-600/50"
+                                          }`}
+                                          animate={frontVerified ? {
+                                            opacity: [0.5, 0.8, 0.5],
+                                          } : {}}
+                                          transition={{
+                                            duration: 2,
+                                            repeat: Infinity,
+                                            ease: "easeInOut",
+                                            delay: 0.3 * (i + 1)
+                                          }}
+                                        />
+                                      ))}
+                                    </div>
+                                    
+                                    {/* Tarama Animasyonu */}
+                                    {frontScanning && (
+                                      <>
+                                        <motion.div 
+                                          className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-emerald-500 to-transparent"
+                                          animate={{
+                                            y: [0, 180, 0],
+                                          }}
+                                          transition={{
+                                            duration: 2,
+                                            ease: "linear",
+                                            repeat: Infinity,
+                                          }}
+                                        />
+                                        <div className="absolute inset-0 flex items-center justify-center">
+                                          <div className="bg-black/60 backdrop-blur-sm px-4 py-2 rounded-full flex items-center gap-2">
+                                            <Scan className="w-4 h-4 text-emerald-500" />
+                                            <span className="text-xs text-emerald-500">Analiz Ediliyor... {frontProgress}%</span>
+                                          </div>
+                                        </div>
+                                      </>
+                                    )}
+
+                                    {/* Onay Animasyonu */}
+                                    {frontVerified && !frontScanning && (
+                                      <motion.div 
+                                        className="absolute inset-0 flex items-center justify-center"
+                                        initial={{ opacity: 0, scale: 0.5 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        transition={{ type: "spring", duration: 0.5 }}
+                                      >
+                                        <div className="bg-emerald-500/20 backdrop-blur-sm px-4 py-2 rounded-full flex items-center gap-2 border border-emerald-500/50">
+                                          <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                                          <span className="text-xs text-emerald-500">Doğrulandı</span>
+                                        </div>
+                                      </motion.div>
+                                    )}
+                                  </motion.div>
                                 </div>
-                                
-                                {/* Tarama Animasyonu */}
-                                {frontScanning && (
-                                  <>
+                              </div>
+                            ) : (
+                              <label className="block p-4 bg-gray-800/50 border border-gray-700 rounded-lg cursor-pointer group-hover:bg-gray-800/70 transition-colors">
+                                <input
+                                  type="file"
+                                  onChange={handleFileUpload("idFront")}
+                                  className="hidden"
+                                  accept="image/*"
+                                />
+                                <div className="flex items-center justify-center gap-3">
+                                  <Upload className="w-4 h-4 text-gray-400" />
+                                  <span className="text-sm text-gray-400">
+                                    Kimlik ön yüzünü yükleyin
+                                  </span>
+                                </div>
+                              </label>
+                            )}
+                          </div>
+                        </div>
+                        <div className="flex gap-3 mt-6">
+                          <motion.button
+                            onClick={() => setCurrentStep("address")}
+                            whileHover={{ scale: 1.01 }}
+                            whileTap={{ scale: 0.99 }}
+                            className="flex-1 py-2.5 bg-gray-800 hover:bg-gray-700 rounded-lg text-sm font-medium text-gray-300"
+                          >
+                            Geri
+                          </motion.button>
+                          <motion.button
+                            onClick={() => setCurrentDocStep("back")}
+                            whileHover={{ scale: 1.01 }}
+                            whileTap={{ scale: 0.99 }}
+                            className="flex-1 py-2.5 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg text-sm font-medium text-white"
+                          >
+                            Devam Et
+                          </motion.button>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Kimlik Arka Yüz */}
+                    {currentDocStep === "back" && (
+                      <div>
+                        <div className="text-sm font-medium mb-4">Kimlik Kartı Arka Yüz</div>
+                        <div className="relative group">
+                          <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg opacity-25 group-hover:opacity-50 transition duration-1000" />
+                          <div className="relative">
+                            {formData.idBack ? (
+                              <div className="relative w-full h-48 bg-gray-800/50 rounded-lg overflow-hidden">
+                                <div className="absolute inset-0 flex items-center justify-center">
+                                  <motion.div 
+                                    className={`w-[280px] h-[180px] rounded-lg border-2 border-dashed relative ${
+                                      backVerified 
+                                        ? "border-emerald-500 bg-emerald-900/20" 
+                                        : "border-gray-600 bg-gray-700/50"
+                                    }`}
+                                  >
+                                    {/* Kimlik Arka Yüz Şablonu */}
                                     <motion.div 
-                                      className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-emerald-500 to-transparent"
-                                      animate={{
-                                        y: [0, 180, 0],
-                                      }}
+                                      className={`absolute top-4 left-4 right-4 h-24 rounded ${
+                                        backVerified ? "bg-emerald-500/50" : "bg-gray-600/50"
+                                      }`}
+                                      animate={backVerified ? {
+                                        opacity: [0.5, 0.8, 0.5],
+                                        scale: [1, 1.02, 1],
+                                      } : {}}
                                       transition={{
                                         duration: 2,
-                                        ease: "linear",
                                         repeat: Infinity,
+                                        ease: "easeInOut"
                                       }}
                                     />
-                                    <div className="absolute inset-0 flex items-center justify-center">
-                                      <div className="bg-black/60 backdrop-blur-sm px-4 py-2 rounded-full flex items-center gap-2">
-                                        <Scan className="w-4 h-4 text-emerald-500" />
-                                        <span className="text-xs text-emerald-500">Analiz Ediliyor... {frontProgress}%</span>
-                                      </div>
-                                    </div>
-                                  </>
-                                )}
+                                    <motion.div 
+                                      className={`absolute bottom-4 left-4 w-40 h-16 rounded ${
+                                        backVerified ? "bg-emerald-500/50" : "bg-gray-600/50"
+                                      }`}
+                                      animate={backVerified ? {
+                                        opacity: [0.5, 0.8, 0.5],
+                                      } : {}}
+                                      transition={{
+                                        duration: 2,
+                                        repeat: Infinity,
+                                        ease: "easeInOut",
+                                        delay: 0.3
+                                      }}
+                                    />
+                                    <motion.div 
+                                      className={`absolute bottom-4 right-4 w-24 h-16 rounded ${
+                                        backVerified ? "bg-emerald-500/50" : "bg-gray-600/50"
+                                      }`}
+                                      animate={backVerified ? {
+                                        opacity: [0.5, 0.8, 0.5],
+                                      } : {}}
+                                      transition={{
+                                        duration: 2,
+                                        repeat: Infinity,
+                                        ease: "easeInOut",
+                                        delay: 0.6
+                                      }}
+                                    />
+                                    
+                                    {/* Tarama Animasyonu */}
+                                    {backScanning && (
+                                      <>
+                                        <motion.div 
+                                          className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-emerald-500 to-transparent"
+                                          animate={{
+                                            y: [0, 180, 0],
+                                          }}
+                                          transition={{
+                                            duration: 2,
+                                            ease: "linear",
+                                            repeat: Infinity,
+                                          }}
+                                        />
+                                        <div className="absolute inset-0 flex items-center justify-center">
+                                          <div className="bg-black/60 backdrop-blur-sm px-4 py-2 rounded-full flex items-center gap-2">
+                                            <Scan className="w-4 h-4 text-emerald-500" />
+                                            <span className="text-xs text-emerald-500">Analiz Ediliyor... {backProgress}%</span>
+                                          </div>
+                                        </div>
+                                      </>
+                                    )}
+
+                                    {/* Onay Animasyonu */}
+                                    {backVerified && !backScanning && (
+                                      <motion.div 
+                                        className="absolute inset-0 flex items-center justify-center"
+                                        initial={{ opacity: 0, scale: 0.5 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        transition={{ type: "spring", duration: 0.5 }}
+                                      >
+                                        <div className="bg-emerald-500/20 backdrop-blur-sm px-4 py-2 rounded-full flex items-center gap-2 border border-emerald-500/50">
+                                          <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                                          <span className="text-xs text-emerald-500">Doğrulandı</span>
+                                        </div>
+                                      </motion.div>
+                                    )}
+                                  </motion.div>
+                                </div>
                               </div>
-                            </div>
+                            ) : (
+                              <label className="block p-4 bg-gray-800/50 border border-gray-700 rounded-lg cursor-pointer group-hover:bg-gray-800/70 transition-colors">
+                                <input
+                                  type="file"
+                                  onChange={handleFileUpload("idBack")}
+                                  className="hidden"
+                                  accept="image/*"
+                                />
+                                <div className="flex items-center justify-center gap-3">
+                                  <Upload className="w-4 h-4 text-gray-400" />
+                                  <span className="text-sm text-gray-400">
+                                    Kimlik arka yüzünü yükleyin
+                                  </span>
+                                </div>
+                              </label>
+                            )}
                           </div>
-                        ) : (
-                          <label className="block p-4 bg-gray-800/50 border border-gray-700 rounded-lg cursor-pointer group-hover:bg-gray-800/70 transition-colors">
+                        </div>
+                        <div className="flex gap-3 mt-6">
+                          <motion.button
+                            onClick={() => setCurrentDocStep("front")}
+                            whileHover={{ scale: 1.01 }}
+                            whileTap={{ scale: 0.99 }}
+                            className="flex-1 py-2.5 bg-gray-800 hover:bg-gray-700 rounded-lg text-sm font-medium text-gray-300"
+                          >
+                            Geri
+                          </motion.button>
+                          <motion.button
+                            onClick={() => setCurrentDocStep("selfie")}
+                            whileHover={{ scale: 1.01 }}
+                            whileTap={{ scale: 0.99 }}
+                            className="flex-1 py-2.5 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg text-sm font-medium text-white"
+                            disabled={!backVerified}
+                          >
+                            Devam Et
+                          </motion.button>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Selfie */}
+                    {currentDocStep === "selfie" && (
+                      <div>
+                        <div className="text-sm font-medium mb-4">Selfie</div>
+                        <div className="relative group">
+                          <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-600 to-purple-600 rounded-lg opacity-25 group-hover:opacity-50 transition duration-1000" />
+                          <div className="relative">
+                            {formData.selfie ? (
+                              <div className="relative w-full h-48 bg-gray-800/50 rounded-lg overflow-hidden">
+                                <div className="absolute inset-0 flex items-center justify-center">
+                                  <motion.div 
+                                    className={`w-[180px] h-[180px] rounded-full border-2 border-dashed relative ${
+                                      selfieVerified 
+                                        ? "border-emerald-500 bg-emerald-900/20" 
+                                        : "border-gray-600 bg-gray-700/50"
+                                    }`}
+                                  >
+                                    {/* Yüz Analiz Şablonu */}
+                                    <motion.div 
+                                      className={`absolute inset-4 rounded-full ${
+                                        selfieVerified ? "border-2 border-emerald-500" : "border-2 border-gray-600"
+                                      }`}
+                                      animate={selfieVerified ? {
+                                        opacity: [0.5, 0.8, 0.5],
+                                        scale: [1, 1.02, 1],
+                                      } : {}}
+                                      transition={{
+                                        duration: 2,
+                                        repeat: Infinity,
+                                        ease: "easeInOut"
+                                      }}
+                                    />
+                                    
+                                    {/* Yüz Hatları Animasyonu */}
+                                    {selfieScanning && (
+                                      <>
+                                        {/* Yatay Tarama Çizgisi */}
+                                        <motion.div 
+                                          className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-emerald-500 to-transparent"
+                                          animate={{
+                                            y: [0, 180, 0],
+                                          }}
+                                          transition={{
+                                            duration: 2,
+                                            ease: "linear",
+                                            repeat: Infinity,
+                                          }}
+                                        />
+                                        
+                                        {/* Yüz Tanıma Noktaları */}
+                                        <motion.div 
+                                          className="absolute inset-8"
+                                          initial={false}
+                                          animate={{
+                                            opacity: [0, 1, 0],
+                                          }}
+                                          transition={{
+                                            duration: 1.5,
+                                            repeat: Infinity,
+                                            ease: "easeInOut",
+                                          }}
+                                        >
+                                          {/* Göz Noktaları */}
+                                          <div className="absolute top-1/3 left-1/3 w-1 h-1 bg-emerald-500 rounded-full" />
+                                          <div className="absolute top-1/3 right-1/3 w-1 h-1 bg-emerald-500 rounded-full" />
+                                          
+                                          {/* Burun ve Ağız Noktaları */}
+                                          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 w-1 h-1 bg-emerald-500 rounded-full" />
+                                          <div className="absolute bottom-1/3 left-1/2 -translate-x-1/2 w-1 h-1 bg-emerald-500 rounded-full" />
+                                          
+                                          {/* Yüz Çerçevesi */}
+                                          <motion.div 
+                                            className="absolute inset-0 border-2 border-dashed border-emerald-500/50 rounded-full"
+                                            animate={{
+                                              rotate: 360,
+                                            }}
+                                            transition={{
+                                              duration: 8,
+                                              repeat: Infinity,
+                                              ease: "linear",
+                                            }}
+                                          />
+                                        </motion.div>
+
+                                        {/* Progress Göstergesi */}
+                                        <div className="absolute inset-0 flex items-center justify-center">
+                                          <div className="bg-black/60 backdrop-blur-sm px-4 py-2 rounded-full flex items-center gap-2">
+                                            <Scan className="w-4 h-4 text-emerald-500" />
+                                            <span className="text-xs text-emerald-500">Yüz Analizi... {selfieProgress}%</span>
+                                          </div>
+                                        </div>
+                                      </>
+                                    )}
+
+                                    {/* Onay Animasyonu */}
+                                    {selfieVerified && !selfieScanning && (
+                                      <motion.div 
+                                        className="absolute inset-0 flex items-center justify-center"
+                                        initial={{ opacity: 0, scale: 0.5 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        transition={{ type: "spring", duration: 0.5 }}
+                                      >
+                                        <div className="bg-emerald-500/20 backdrop-blur-sm px-4 py-2 rounded-full flex items-center gap-2 border border-emerald-500/50">
+                                          <CheckCircle2 className="w-4 h-4 text-emerald-500" />
+                                          <span className="text-xs text-emerald-500">Yüz Doğrulandı</span>
+                                        </div>
+                                      </motion.div>
+                                    )}
+                                  </motion.div>
+                                </div>
+                              </div>
+                            ) : (
+                              <label className="block p-4 bg-gray-800/50 border border-gray-700 rounded-lg cursor-pointer group-hover:bg-gray-800/70 transition-colors">
+                                <input
+                                  type="file"
+                                  onChange={handleFileUpload("selfie")}
+                                  className="hidden"
+                                  accept="image/*"
+                                />
+                                <div className="flex items-center justify-center gap-3">
+                                  <Camera className="w-4 h-4 text-gray-400" />
+                                  <span className="text-sm text-gray-400">
+                                    Selfie çekin veya yükleyin
+                                  </span>
+                                </div>
+                              </label>
+                            )}
+                          </div>
+                        </div>
+                        <div className="flex gap-3 mt-6">
+                          <motion.button
+                            onClick={() => setCurrentDocStep("back")}
+                            whileHover={{ scale: 1.01 }}
+                            whileTap={{ scale: 0.99 }}
+                            className="flex-1 py-2.5 bg-gray-800 hover:bg-gray-700 rounded-lg text-sm font-medium text-gray-300"
+                          >
+                            Geri
+                          </motion.button>
+                          <motion.button
+                            onClick={() => setCurrentDocStep("address")}
+                            whileHover={{ scale: 1.01 }}
+                            whileTap={{ scale: 0.99 }}
+                            className="flex-1 py-2.5 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg text-sm font-medium text-white"
+                            disabled={!selfieVerified}
+                          >
+                            Devam Et
+                          </motion.button>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* İkametgah */}
+                    {currentDocStep === "address" && (
+                      <div>
+                        <div className="text-sm font-medium mb-4">İkametgah Belgesi</div>
+                        <div className="relative group">
+                          <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg opacity-25 group-hover:opacity-50 transition duration-1000" />
+                          <label className="relative block p-4 bg-gray-800/50 border border-gray-700 rounded-lg cursor-pointer group-hover:bg-gray-800/70 transition-colors">
                             <input
                               type="file"
-                              onChange={handleFileUpload("idFront")}
+                              onChange={handleFileUpload("proofOfAddress")}
                               className="hidden"
-                              accept="image/*"
+                              accept="image/*,application/pdf"
                             />
                             <div className="flex items-center justify-center gap-3">
-                              <Upload className="w-4 h-4 text-gray-400" />
+                              <FileText className="w-4 h-4 text-gray-400" />
                               <span className="text-sm text-gray-400">
-                                Kimlik ön yüzünü yükleyin
+                                {formData.proofOfAddress ? formData.proofOfAddress.name : "Dosya seçin"}
                               </span>
                             </div>
                           </label>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-xs text-gray-400 mb-1">Kimlik Arka Yüz</label>
-                    <div className="relative group">
-                      <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg opacity-25 group-hover:opacity-50 transition duration-1000" />
-                      <div className="relative">
-                        {formData.idBack ? (
-                          <div className="relative w-full h-48 bg-gray-800/50 rounded-lg overflow-hidden">
-                            <div className="absolute inset-0 flex items-center justify-center">
-                              <div className="w-[280px] h-[180px] bg-gray-700/50 rounded-lg border-2 border-dashed border-gray-600 relative">
-                                {/* Kimlik Arka Yüz Şablonu */}
-                                <div className="absolute top-4 left-4 right-4 h-24 bg-gray-600/50 rounded" />
-                                <div className="absolute bottom-4 left-4 w-40 h-16 bg-gray-600/50 rounded" />
-                                <div className="absolute bottom-4 right-4 w-24 h-16 bg-gray-600/50 rounded" />
-                                
-                                {/* Tarama Animasyonu */}
-                                {backScanning && (
-                                  <>
-                                    <motion.div 
-                                      className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-emerald-500 to-transparent"
-                                      animate={{
-                                        y: [0, 180, 0],
-                                      }}
-                                      transition={{
-                                        duration: 2,
-                                        ease: "linear",
-                                        repeat: Infinity,
-                                      }}
-                                    />
-                                    <div className="absolute inset-0 flex items-center justify-center">
-                                      <div className="bg-black/60 backdrop-blur-sm px-4 py-2 rounded-full flex items-center gap-2">
-                                        <Scan className="w-4 h-4 text-emerald-500" />
-                                        <span className="text-xs text-emerald-500">Analiz Ediliyor... {backProgress}%</span>
-                                      </div>
-                                    </div>
-                                  </>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                        ) : (
-                          <label className="block p-4 bg-gray-800/50 border border-gray-700 rounded-lg cursor-pointer group-hover:bg-gray-800/70 transition-colors">
-                            <input
-                              type="file"
-                              onChange={handleFileUpload("idBack")}
-                              className="hidden"
-                              accept="image/*"
-                            />
-                            <div className="flex items-center justify-center gap-3">
-                              <Upload className="w-4 h-4 text-gray-400" />
-                              <span className="text-sm text-gray-400">
-                                Kimlik arka yüzünü yükleyin
-                              </span>
-                            </div>
-                          </label>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-xs text-gray-400 mb-1">Selfie</label>
-                    <div className="relative group">
-                      <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg opacity-25 group-hover:opacity-50 transition duration-1000" />
-                      <label className="relative block p-4 bg-gray-800/50 border border-gray-700 rounded-lg cursor-pointer group-hover:bg-gray-800/70 transition-colors">
-                        <input
-                          type="file"
-                          onChange={handleFileUpload("selfie")}
-                          className="hidden"
-                          accept="image/*"
-                        />
-                        <div className="flex items-center justify-center gap-3">
-                          <Camera className="w-4 h-4 text-gray-400" />
-                          <span className="text-sm text-gray-400">
-                            {formData.selfie ? formData.selfie.name : "Selfie çekin"}
-                          </span>
                         </div>
-                      </label>
-                    </div>
-                  </div>
-
-                  <div>
-                    <label className="block text-xs text-gray-400 mb-1">İkametgah Belgesi</label>
-                    <div className="relative group">
-                      <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg opacity-25 group-hover:opacity-50 transition duration-1000" />
-                      <label className="relative block p-4 bg-gray-800/50 border border-gray-700 rounded-lg cursor-pointer group-hover:bg-gray-800/70 transition-colors">
-                        <input
-                          type="file"
-                          onChange={handleFileUpload("proofOfAddress")}
-                          className="hidden"
-                          accept="image/*,application/pdf"
-                        />
-                        <div className="flex items-center justify-center gap-3">
-                          <FileText className="w-4 h-4 text-gray-400" />
-                          <span className="text-sm text-gray-400">
-                            {formData.proofOfAddress ? formData.proofOfAddress.name : "Dosya seçin"}
-                          </span>
+                        <div className="flex gap-3 mt-6">
+                          <motion.button
+                            onClick={() => setCurrentDocStep("selfie")}
+                            whileHover={{ scale: 1.01 }}
+                            whileTap={{ scale: 0.99 }}
+                            className="flex-1 py-2.5 bg-gray-800 hover:bg-gray-700 rounded-lg text-sm font-medium text-gray-300"
+                          >
+                            Geri
+                          </motion.button>
+                          <motion.button
+                            onClick={() => setCurrentStep("verification")}
+                            whileHover={{ scale: 1.01 }}
+                            whileTap={{ scale: 0.99 }}
+                            className="flex-1 py-2.5 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg text-sm font-medium text-white"
+                          >
+                            Devam Et
+                          </motion.button>
                         </div>
-                      </label>
-                    </div>
-                  </div>
-
-                  <div className="flex gap-3 mt-6">
-                    <motion.button
-                      onClick={() => setCurrentStep("address")}
-                      whileHover={{ scale: 1.01 }}
-                      whileTap={{ scale: 0.99 }}
-                      className="flex-1 py-2.5 bg-gray-800 hover:bg-gray-700 rounded-lg text-sm font-medium text-gray-300"
-                    >
-                      Geri
-                    </motion.button>
-                    <motion.button
-                      onClick={() => setCurrentStep("verification")}
-                      whileHover={{ scale: 1.01 }}
-                      whileTap={{ scale: 0.99 }}
-                      className="flex-1 py-2.5 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg text-sm font-medium text-white"
-                    >
-                      Devam Et
-                    </motion.button>
-                  </div>
+                      </div>
+                    )}
+                  </motion.div>
                 </div>
               )}
 
