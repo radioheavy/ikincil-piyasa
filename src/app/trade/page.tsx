@@ -105,7 +105,7 @@ export default function TradePage() {
             <div className="flex items-center gap-4">
               <div className="flex flex-col">
                 <div className="flex items-center gap-2">
-                  <h1 className="text-2xl font-bold text-gray-100">FUIP/TRY</h1>
+                  <h1 className="text-2xl font-bold text-gray-100">İP/TRY</h1>
                   <span className={`flex items-center ${marketData.priceChange >= 0 ? 'text-green-400' : 'text-red-400'}`}>
                     {marketData.priceChange >= 0 ? <ArrowUp className="w-4 h-4" /> : <ArrowDown className="w-4 h-4" />}
                     {Math.abs(marketData.priceChangePercent)}%
@@ -175,9 +175,9 @@ export default function TradePage() {
                   top: smoothMouseY,
                 }}
               >
-                <h3 className="font-semibold mb-2">FUIP Hakkında</h3>
-                <p className="text-sm text-gray-300">
-                  FUIP (Funding Investment Platform) tokeni, platform üzerindeki kampanyalara yatırım yapmak ve pay alım satımı gerçekleştirmek için kullanılır.
+                <h3 className="font-semibold mb-2">İkincil Piyasa Token Hakkında</h3>
+                <p className="text-sm text-gray-400">
+                  İkincil Piyasa (İP) tokeni, platform üzerindeki kampanyalara yatırım yapmak ve pay alım satımı gerçekleştirmek için kullanılır.
                 </p>
               </motion.div>
             )}
@@ -329,7 +329,7 @@ export default function TradePage() {
                       placeholder="0.00"
                     />
                     <span className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400">
-                      FUIP
+                      İP
                     </span>
                   </div>
                 </div>

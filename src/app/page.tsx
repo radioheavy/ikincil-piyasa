@@ -233,7 +233,7 @@ export default function HomePage() {
                     </defs>
                     <text>
                       <textPath href="#circle" textLength="310">
-                        FUIP • FUIP • FUIP • FUIP • FUIP •
+                        İkincil Piyasa • İkincil Piyasa • İkincil Piyasa • İkincil Piyasa • İkincil Piyasa •
                       </textPath>
                     </text>
                   </svg>
