@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { motion, useMotionValue, useSpring } from "framer-motion"
-import { ArrowDown, ArrowUp, Clock, Settings, Wallet, History, ChartBar, Info } from "lucide-react"
+import { ArrowDown, ArrowUp, Clock, Settings, Wallet, History, ChartBar, Info, List, BarChart } from "lucide-react"
 import dynamic from "next/dynamic"
 import AnimatedBackground from "@/components/AnimatedBackground"
 import WalletModal from "@/components/WalletModal"
@@ -25,16 +25,23 @@ const marketData = {
   totalVolume24h: 15000000,
 }
 
-const orderBook = {
+// Örnek veri - Derinlik grafiği için daha fazla veri
+const depthData = {
   asks: [
-    { price: 126.00, amount: 1500, total: 189000 },
-    { price: 125.90, amount: 2200, total: 276980 },
-    { price: 125.85, amount: 1800, total: 226530 },
+    { price: 126.50, amount: 3500, total: 442750, cumulative: 442750 },
+    { price: 126.25, amount: 2800, total: 353500, cumulative: 796250 },
+    { price: 126.15, amount: 4200, total: 529830, cumulative: 1326080 },
+    { price: 126.00, amount: 1500, total: 189000, cumulative: 1515080 },
+    { price: 125.90, amount: 2200, total: 276980, cumulative: 1792060 },
+    { price: 125.85, amount: 1800, total: 226530, cumulative: 2018590 },
   ],
   bids: [
-    { price: 125.50, amount: 2500, total: 313750 },
-    { price: 125.45, amount: 1800, total: 225810 },
-    { price: 125.40, amount: 3200, total: 401280 },
+    { price: 125.50, amount: 2500, total: 313750, cumulative: 313750 },
+    { price: 125.45, amount: 1800, total: 225810, cumulative: 539560 },
+    { price: 125.40, amount: 3200, total: 401280, cumulative: 940840 },
+    { price: 125.35, amount: 2700, total: 338445, cumulative: 1279285 },
+    { price: 125.30, amount: 1900, total: 238070, cumulative: 1517355 },
+    { price: 125.25, amount: 3500, total: 438375, cumulative: 1955730 },
   ]
 }
 
@@ -72,6 +79,7 @@ export default function TradePage() {
   const [price, setPrice] = useState("")
   const [showTooltip, setShowTooltip] = useState("")
   const [isWalletOpen, setIsWalletOpen] = useState(false)
+  const [orderBookView, setOrderBookView] = useState<'list' | 'depth'>('list')
   
   // Mouse takibi için
   const mouseX = useMotionValue(0)
@@ -92,6 +100,12 @@ export default function TradePage() {
 
   // Toplam tutarı hesapla
   const total = Number(amount) * (orderType === "market" ? marketData.currentPrice : Number(price))
+
+  // Derinlik grafiği için maksimum değerleri hesapla
+  const maxCumulative = Math.max(
+    depthData.asks[depthData.asks.length - 1].cumulative,
+    depthData.bids[depthData.bids.length - 1].cumulative
+  )
 
   return (
     <main className="min-h-screen pt-16">
@@ -399,48 +413,159 @@ export default function TradePage() {
 
             {/* Emir Defteri */}
             <div className="bg-gray-900/80 backdrop-blur-xl rounded-2xl border border-gray-800/50 p-6 shadow-lg hover:shadow-xl transition-shadow duration-300">
-              <h2 className="text-lg font-semibold text-gray-100 mb-4 flex items-center gap-2">
-                <ChartBar className="w-5 h-5 text-blue-400" />
-                Emir Defteri
-              </h2>
-              
-              {/* Satış Emirleri */}
-              <div className="space-y-1.5 mb-4">
-                {orderBook.asks.map((order, index) => (
-                  <div
-                    key={index}
-                    className="grid grid-cols-3 text-sm items-center bg-red-500/5 p-2 rounded-lg hover:bg-red-500/10 transition-colors duration-200"
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-semibold text-gray-100 flex items-center gap-2">
+                  <ChartBar className="w-5 h-5 text-blue-400" />
+                  Emir Defteri
+                </h2>
+                <div className="flex items-center gap-2 p-1 bg-gray-800/50 backdrop-blur-sm rounded-lg">
+                  <button
+                    onClick={() => setOrderBookView('list')}
+                    className={`p-2 rounded-lg transition-all duration-200 ${
+                      orderBookView === 'list'
+                        ? 'bg-blue-500 text-white'
+                        : 'text-gray-400 hover:text-gray-200'
+                    }`}
                   >
-                    <span className="text-red-400 font-medium">₺{order.price}</span>
-                    <span className="text-right text-gray-300">{order.amount.toLocaleString()}</span>
-                    <span className="text-right text-gray-400">₺{order.total.toLocaleString()}</span>
-                  </div>
-                ))}
-              </div>
-
-              {/* Güncel Fiyat */}
-              <div className="text-center py-3 border-y border-gray-800 my-4 bg-blue-500/5 rounded-lg">
-                <div className="flex items-center justify-center gap-2">
-                  <span className="text-lg font-bold text-gray-100">₺{marketData.currentPrice}</span>
-                  <span className={`text-sm ${marketData.priceChange >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                    ({marketData.priceChangePercent}%)
-                  </span>
+                    <List className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={() => setOrderBookView('depth')}
+                    className={`p-2 rounded-lg transition-all duration-200 ${
+                      orderBookView === 'depth'
+                        ? 'bg-blue-500 text-white'
+                        : 'text-gray-400 hover:text-gray-200'
+                    }`}
+                  >
+                    <BarChart className="w-4 h-4" />
+                  </button>
                 </div>
               </div>
 
-              {/* Alış Emirleri */}
-              <div className="space-y-1.5 mt-4">
-                {orderBook.bids.map((order, index) => (
-                  <div
-                    key={index}
-                    className="grid grid-cols-3 text-sm items-center bg-green-500/5 p-2 rounded-lg hover:bg-green-500/10 transition-colors duration-200"
-                  >
-                    <span className="text-green-400 font-medium">₺{order.price}</span>
-                    <span className="text-right text-gray-300">{order.amount.toLocaleString()}</span>
-                    <span className="text-right text-gray-400">₺{order.total.toLocaleString()}</span>
+              {orderBookView === 'list' ? (
+                <>
+                  {/* Liste Görünümü */}
+                  <div className="space-y-1.5 mb-4">
+                    {depthData.asks.map((order, index) => (
+                      <div
+                        key={index}
+                        className="grid grid-cols-3 text-sm items-center bg-red-500/5 p-2 rounded-lg hover:bg-red-500/10 transition-colors duration-200"
+                      >
+                        <span className="text-red-400 font-medium">₺{order.price}</span>
+                        <span className="text-right text-gray-300">{order.amount.toLocaleString()}</span>
+                        <span className="text-right text-gray-400">₺{order.total.toLocaleString()}</span>
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
+
+                  {/* Güncel Fiyat */}
+                  <div className="text-center py-3 border-y border-gray-800 my-4 bg-blue-500/5 rounded-lg">
+                    <div className="flex items-center justify-center gap-2">
+                      <span className="text-lg font-bold text-gray-100">₺{marketData.currentPrice}</span>
+                      <span className={`text-sm ${marketData.priceChange >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                        ({marketData.priceChangePercent}%)
+                      </span>
+                    </div>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    {depthData.bids.map((order, index) => (
+                      <div
+                        key={index}
+                        className="grid grid-cols-3 text-sm items-center bg-green-500/5 p-2 rounded-lg hover:bg-green-500/10 transition-colors duration-200"
+                      >
+                        <span className="text-green-400 font-medium">₺{order.price}</span>
+                        <span className="text-right text-gray-300">{order.amount.toLocaleString()}</span>
+                        <span className="text-right text-gray-400">₺{order.total.toLocaleString()}</span>
+                      </div>
+                    ))}
+                  </div>
+                </>
+              ) : (
+                <>
+                  {/* Derinlik Grafiği */}
+                  <div className="relative h-[400px] mt-4">
+                    {/* Satış Emirleri (Kırmızı Alan) */}
+                    <div className="absolute inset-0">
+                      {depthData.asks.map((order, index) => {
+                        const width = (order.cumulative / maxCumulative) * 100
+                        return (
+                          <div
+                            key={`ask-${index}`}
+                            className="absolute h-[1px] bg-red-500/20"
+                            style={{
+                              bottom: `${(index / depthData.asks.length) * 100}%`,
+                              right: 0,
+                              width: `${width}%`,
+                            }}
+                          >
+                            <div className="absolute right-0 -top-3 text-xs text-gray-400">
+                              ₺{order.price.toLocaleString()}
+                            </div>
+                            <div className="absolute left-2 -top-3 text-xs text-gray-400">
+                              {order.amount.toLocaleString()}
+                            </div>
+                          </div>
+                        )
+                      })}
+                      <div className="absolute inset-0 bg-gradient-to-l from-red-500/10 to-transparent" />
+                    </div>
+
+                    {/* Alış Emirleri (Yeşil Alan) */}
+                    <div className="absolute inset-0">
+                      {depthData.bids.map((order, index) => {
+                        const width = (order.cumulative / maxCumulative) * 100
+                        return (
+                          <div
+                            key={`bid-${index}`}
+                            className="absolute h-[1px] bg-green-500/20"
+                            style={{
+                              top: `${(index / depthData.bids.length) * 100}%`,
+                              left: 0,
+                              width: `${width}%`,
+                            }}
+                          >
+                            <div className="absolute left-0 -top-3 text-xs text-gray-400">
+                              ₺{order.price.toLocaleString()}
+                            </div>
+                            <div className="absolute right-2 -top-3 text-xs text-gray-400">
+                              {order.amount.toLocaleString()}
+                            </div>
+                          </div>
+                        )
+                      })}
+                      <div className="absolute inset-0 bg-gradient-to-r from-green-500/10 to-transparent" />
+                    </div>
+
+                    {/* Orta Fiyat Çizgisi */}
+                    <div className="absolute left-1/2 top-0 bottom-0 w-[1px] bg-blue-500/50" />
+                    
+                    {/* Güncel Fiyat */}
+                    <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 bg-blue-500 text-white text-sm font-medium px-3 py-1 rounded-full shadow-lg">
+                      ₺{marketData.currentPrice.toLocaleString()}
+                    </div>
+
+                    {/* Açıklama */}
+                    <div className="absolute top-4 right-4 flex flex-col gap-2 bg-gray-800/50 backdrop-blur-sm p-3 rounded-lg border border-gray-700/50">
+                      <div className="flex items-center gap-2 text-sm">
+                        <div className="w-3 h-3 rounded-sm bg-gradient-to-r from-red-500/20 to-transparent" />
+                        <span className="text-gray-400">Satış Derinliği</span>
+                      </div>
+                      <div className="flex items-center gap-2 text-sm">
+                        <div className="w-3 h-3 rounded-sm bg-gradient-to-r from-green-500/20 to-transparent" />
+                        <span className="text-gray-400">Alış Derinliği</span>
+                      </div>
+                    </div>
+
+                    {/* Hacim Bilgisi */}
+                    <div className="absolute bottom-4 left-4 bg-gray-800/50 backdrop-blur-sm p-3 rounded-lg border border-gray-700/50">
+                      <div className="text-sm text-gray-400">
+                        Toplam Hacim: <span className="text-gray-200 font-medium">₺{(maxCumulative).toLocaleString()}</span>
+                      </div>
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
 
             {/* Son İşlemler */}
